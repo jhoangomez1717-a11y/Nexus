@@ -1,0 +1,102 @@
+<!--
+  ARCHIVO: app.html
+  PROPÓSITO: Plantilla principal (Layout) de la aplicación Angular.
+  Este archivo define el "caparazón" que envuelve a todas las demás páginas de la tienda.
+  Contiene la barra de navegación persistente (Navbar) en la parte superior y
+  el <router-outlet> en la parte inferior, que es el "agujero" donde Angular inyecta
+  dinámicamente las pantallas (Tienda, Biblioteca, Perfil) según la URL.
+-->
+
+<header class="navbar">
+  <div class="navbar__inner">
+
+    <!-- 
+      IZQUIERDA: Logotipo de NEXUS
+      Se utiliza una etiqueta <a> clásica en lugar de routerLink para forzar
+      una recarga completa de la tienda al hacer clic en el logo.
+      La letra 'X' tiene su propia clase para aplicarle el efecto de luz roja (CSS).
+    -->
+    <a class="logo" href="/tienda" aria-label="NEXUS, ir al inicio" style="cursor: pointer;">
+      NE<span class="logo__x">X</span>US
+    </a>
+
+    <!-- 
+      CENTRO: Navegación Principal
+      routerLink: Le dice a Angular a qué ruta interna cambiar sin recargar la página.
+      routerLinkActive: Añade automáticamente la clase CSS nav__link--active (la línea roja debajo)
+                        si el usuario está actualmente en esa ruta.
+    -->
+    <nav class="nav" aria-label="Navegación principal">
+      <a class="nav__link" routerLink="/tienda" routerLinkActive="nav__link--active">Tienda</a>
+      <a class="nav__link" routerLink="/biblioteca" routerLinkActive="nav__link--active">Biblioteca</a>
+      
+      <!-- 
+        NUEVA SINTAXIS ANGULAR V17+ (Control Flow @if)
+        Evalúa la variable booleana 'isLogged' definida en app.ts.
+        Si es true: El enlace lleva al Perfil real del usuario.
+        Si es false: El enlace redirige a la pantalla de Login para proteger la ruta.
+      -->
+      @if (isLogged) {
+        <a class="nav__link" routerLink="/perfil" routerLinkActive="nav__link--active">Perfil</a>
+      } @else {
+        <a class="nav__link" routerLink="/login" routerLinkActive="nav__link--active">Perfil</a>
+      }
+    </nav>
+
+    <!-- 
+      DERECHA: Área de Usuario (Autenticación)
+      Maneja la visualización dinámica dependiendo de si el usuario ha iniciado sesión.
+    -->
+    <div class="user">
+      @if (isLogged) {
+        
+        <!-- ESTADO 1: USUARIO CONECTADO -->
+        <!-- Muestra el nombre de usuario (extraído de app.ts) -->
+        <div class="wallet" style="color: #ccc; font-weight: bold; padding-right: 15px; cursor: default;">
+          {{ username }}
+        </div>
+        
+        <!-- Avatar interactivo que también funciona como acceso directo al Perfil -->
+        <div class="avatar" role="button" aria-label="Ir al Perfil" routerLink="/perfil" style="cursor: pointer;">
+          <!-- SVG: Icono vectorial del avatar genérico -->
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8.5" r="4" />
+            <path d="M4 21c0-4.4 3.6-7.5 8-7.5s8 3.1 8 7.5z" />
+          </svg>
+        </div>
+        
+        <!-- 
+          Botón para cerrar sesión. 
+          Al hacer clic (click), ejecuta el método logout() de app.ts, 
+          borrando el token de seguridad y expulsando al usuario. 
+        -->
+        <button (click)="logout()" style="background: none; border: none; color: #ff2a2a; cursor: pointer; margin-left: 15px; font-weight: bold;">
+          Salir
+        </button>
+
+      } @else {
+        
+        <!-- ESTADO 2: USUARIO DESCONECTADO (INVITADO) -->
+        <!-- Avatar semi-transparente (opacity: 0.5) que actúa como botón gigante para ir a la pantalla de Login -->
+        <div class="avatar" role="button" aria-label="Iniciar Sesión" routerLink="/login" style="cursor: pointer; opacity: 0.5;">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8.5" r="4" />
+            <path d="M4 21c0-4.4 3.6-7.5 8-7.5s8 3.1 8 7.5z" />
+          </svg>
+        </div>
+      }
+    </div>
+
+  </div>
+</header>
+
+<!-- 
+  CONTENEDOR DINÁMICO (ROUTING)
+  Aquí es donde ocurre la magia de las Single Page Applications (SPA).
+  Angular buscará en app.routes.ts qué componente corresponde a la URL actual
+  y lo renderizará justo dentro de estas etiquetas <router-outlet>.
+  El Navbar de arriba jamás se recarga.
+-->
+<main class="main">
+  <router-outlet></router-outlet>
+</main>

@@ -1,0 +1,105 @@
+<!--
+  ARCHIVO: profile.html
+  PROPÓSITO: Plantilla visual interactiva del Perfil de Usuario.
+  Muestra los datos de la cuenta activa (avatar, nombre, nivel) y resume la 
+  actividad de juego más reciente extrayendo la información del LocalStorage,
+  simulando el diseño y funcionamiento del perfil de Steam.
+-->
+
+<div class="profile-container">
+  
+  <!-- ============================================================
+       CABECERA DEL PERFIL (HEADER)
+       ============================================================ -->
+  <div class="profile-header">
+    
+    <!-- Contenedor del Avatar SVG gigante -->
+    <div class="avatar-large">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="8.5" r="4" />
+        <path d="M4 21c0-4.4 3.6-7.5 8-7.5s8 3.1 8 7.5z" />
+      </svg>
+    </div>
+    
+    <!-- Información de Identidad -->
+    <div class="profile-info">
+      <!-- Muestra el nombre de usuario recuperado de la sesión -->
+      <h1 class="username">{{ username }}</h1>
+      <!-- Muestra el nivel calculado automáticamente en base al progreso de juego -->
+      <div class="level-badge">Nivel <span>{{ level }}</span></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CUERPO PRINCIPAL (2 COLUMNAS)
+       ============================================================ -->
+  <div class="profile-body">
+    
+    <!-- ----------------------------------------------------------
+         COLUMNA IZQUIERDA: FEED DE ACTIVIDAD RECIENTE
+         ---------------------------------------------------------- -->
+    <div class="recent-activity">
+      <div class="section-header">
+        <h2>Actividad reciente</h2>
+      </div>
+
+      <!-- ESTADO VACÍO: Si el usuario no ha jugado a nada aún -->
+      @if (recentGames.length === 0) {
+        <p style="color: #888; margin-top: 20px;">No hay actividad reciente. ¡Ve a la tienda de NEXUS y adquiere tu primer juego!</p>
+      }
+
+      <!-- 
+        BUCLE DE JUEGOS: Itera sobre los 3 juegos más recientes.
+        track game.id optimiza el DOM cuando la lista cambia. 
+      -->
+      @for (game of recentGames; track game.id) {
+        <div class="game-card">
+          <!-- Carátula en formato miniatura -->
+          <img [src]="game.cover" alt="Portada" class="game-image">
+          
+          <!-- Detalles y Estadísticas Individuales del Juego -->
+          <div class="game-details">
+            <h3 class="game-title">{{ game.title }}</h3>
+            
+            <div class="game-stats">
+              <span class="hours">{{ game.hoursPlayed.toFixed(1) }} h registradas</span>
+              <span class="last-played">última sesión: {{ game.lastPlayed || 'Nunca' }}</span>
+            </div>
+
+            <!-- Módulo de Progreso de Logros -->
+            <div class="achievements">
+              <div class="achievements-text">
+                <span>Avance en los logros</span>
+                <span>{{ game.achievementsUnlocked }} de {{ game.totalAchievements }}</span>
+              </div>
+              <div class="progress-bar-bg">
+                <!-- Barra de progreso dinámica vinculada a la función de porcentaje -->
+                <div class="progress-bar-fill" [style.width]="getAchievementPercentage(game) + '%'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ----------------------------------------------------------
+         COLUMNA DERECHA: SIDEBAR DE ESTADÍSTICAS GLOBALES
+         ---------------------------------------------------------- -->
+    <div class="sidebar">
+      <div class="status">En línea</div>
+      
+      <!-- Contador de insignias ganadas (dinámico en base a los juegos completos) -->
+      <div class="sidebar-item">
+        <span class="item-title">Insignias</span>
+        <span class="item-count">{{ badges }}</span> <!-- 👈 AHORA ES DINÁMICO -->
+      </div>
+      
+      <!-- Contador total de la biblioteca de juegos -->
+      <div class="sidebar-item">
+        <span class="item-title">Juegos</span>
+        <span class="item-count">{{ totalGames }}</span>
+      </div>
+    </div>
+    
+  </div>
+</div>

@@ -1,0 +1,247 @@
+<!--
+  ARCHIVO: game-list.html
+  PROPÓSITO: Plantilla principal del catálogo de juegos (Tienda).
+  Define la estructura visual completa de la página de inicio, manejando:
+  - La barra de búsqueda y el contador de juegos.
+  - Los estados dinámicos (Cargando, Vacío, Catálogo lleno).
+  - La cuadrícula de tarjetas de videojuegos.
+  - La paginación.
+  - Las ventanas emergentes (Modales) para los detalles del juego y la pasarela de pagos.
+-->
+
+<section class="catalog">
+  <!-- ============================================================
+       ENCABEZADO (HERO SECTION) Y BUSCADOR
+       ============================================================ -->
+  <header class="hero">
+    <div class="hero__inner">
+      <h1 class="hero__title">Catálogo de juegos</h1>
+      <p class="hero__lead">Descubre, compara y compra tu próximo juego.</p>
+
+      <!-- Contador de juegos. Solo se muestra si la base de datos no está vacía -->
+      @if (totalGames > 0) {
+        <p class="hero__count" style="color: #ff2a2a; font-weight: bold; font-size: 1.2rem;">■ {{ totalGames }} títulos disponibles en NEXUS</p>
+      }
+
+      <!-- 
+        BARRA DE BÚSQUEDA 
+        [(ngModel)]="searchTerm": Enlaza lo que el usuario escribe directamente a la variable en TypeScript.
+        (click)="onSearch()": Ejecuta la función de búsqueda al presionar el botón.
+      -->
+      <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 30px;">
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar por nombre, género o categoría..." 
+                 style="padding: 12px; border-radius: 5px; border: 1px solid #333; background: #111; color: white; width: 400px; font-size: 1rem;">
+          <button (click)="onSearch()" 
+                  style="padding: 12px 25px; background: #ff2a2a; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1rem;">
+              Buscar
+          </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="catalog__content">
+
+    <!-- ============================================================
+         LÓGICA DE ESTADOS (CONTROL FLOW DE ANGULAR V17+)
+         ============================================================ -->
+    <!-- 👇 ESTADO 1: CARGANDO DATOS -->
+    @if (isLoading) {
+      
+      <!-- Estado de Carga -->
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 0;">
+        <div class="spinner"></div> <!-- Usamos el spinner que ya tienes en el CSS -->
+        <h2 style="color: white; margin-top: 20px;">Cargando catálogo...</h2>
+        <p style="color: #aaa;">Conectando con los servidores de NEXUS</p>
+      </div>
+
+    <!-- 👇 ESTADO 2: CATÁLOGO VACÍO O SIN RESULTADOS -->
+    } @else if (games.length === 0) {
+
+      <!-- Estado vacío (Solo sale si la búsqueda realmente da 0 resultados) -->
+      <div class="empty" role="status">
+        <span class="empty__zero" aria-hidden="true">0</span>
+        <h2 class="empty__title">El catálogo está vacío</h2>
+        <p class="empty__text">
+          Todavía no hay juegos publicados o tu búsqueda no dio resultados.
+        </p>
+      </div>
+
+    <!-- 👇 ESTADO 3: MOSTRAR LOS JUEGOS -->
+    } @else {
+      <!-- Cuadrícula de juegos -->
+      <div class="catalog__grid">
+        <!-- 
+          Bucle @for: Itera sobre el arreglo 'games' descargado de la API.
+          'track $index' optimiza el rendimiento indicando a Angular cómo rastrear cada elemento.
+        -->
+        @for (game of games; track $index) {
+          <article class="game-card">
+            
+            <!-- PORTADA Y PRECIO -->
+            <div class="game-card__cover">
+              @if (game.cover) {
+                  <img [src]="game.cover" [alt]="game.title" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+              } @else {
+                  <!-- Si no hay imagen, muestra la inicial del título como respaldo -->
+                  <span class="game-card__initial" aria-hidden="true">{{ game.title?.charAt(0) }}</span>
+              }
+              
+              <!-- Formateo de precio condicional (Pipe Currency o 'Gratis') -->
+              @if (game.base_price > 0) {
+                <span class="price-tag">{{ game.base_price | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+              } @else {
+                <span class="price-tag" style="color: #00ff66;">Gratis</span>
+              }
+            </div>
+
+            <!-- DATOS DEL JUEGO -->
+            <div class="game-card__body">
+              <p class="game-card__dev">{{ game.developer?.name }}</p>
+              <h2 class="game-card__title">{{ game.title }}</h2>
+              <p class="game-card__synopsis">{{ game.synopsis }}</p>
+
+              <p class="game-card__meta">
+                <span class="game-card__meta-label">Lanzamiento</span>
+                <time [attr.datetime]="game.release_date">{{ game.release_date }}</time>
+              </p>
+
+              <!-- BOTONES DE INTERACCIÓN -->
+              <div class="game-card__actions">
+                <!-- Abre el modal de detalles -->
+                <button type="button" class="btn btn--ghost" (click)="openDetails(game)">Ver más</button>
+                <!-- 👇 BOTÓN COMPRAR CONECTADO - Abre el modal de Nequi -->
+                <button type="button" class="btn btn--buy" (click)="buyGame(game)">Comprar</button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+      
+      <!-- ============================================================
+           CONTROLES DE PAGINACIÓN
+           ============================================================ -->
+      <!-- Usa variables prevUrl y nextUrl para habilitar o deshabilitar los botones -->
+      <div style="display: flex; justify-content: center; gap: 20px; padding: 40px 0;">
+          <button (click)="prevPage()" [disabled]="!prevUrl" 
+                  style="padding: 10px 20px; background: #ff2a2a; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s;"
+                  [style.opacity]="!prevUrl ? '0.3' : '1'">
+            &#8592; Anterior
+          </button>
+          
+          <span style="color: white; align-self: center; font-weight: bold; font-size: 1.2rem;">
+            Página {{ currentPage }}
+          </span>
+          
+          <button (click)="nextPage()" [disabled]="!nextUrl" 
+                  style="padding: 10px 20px; background: #ff2a2a; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s;"
+                  [style.opacity]="!nextUrl ? '0.3' : '1'">
+            Siguiente &#8594;
+          </button>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ============================================================
+     VENTANA MODAL: DETALLES Y RESEÑAS
+     ============================================================ -->
+<!-- Solo se renderiza si hay un juego seleccionado en la variable selectedGame -->
+@if (selectedGame) {
+  <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; overflow-y: auto;">
+    <div style="background: #141414; border: 1px solid #333; width: 700px; max-width: 90%; border-radius: 12px; padding: 30px; color: white; position: relative; max-height: 90vh; overflow-y: auto;">
+      
+      <!-- Botón cerrar (X) -->
+      <button (click)="closeDetails()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: #aaa; font-size: 1.8rem; cursor: pointer;">&times;</button>
+      
+      <!-- Información ampliada del juego -->
+      <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
+        <img [src]="selectedGame.cover" alt="" style="width: 250px; height: 140px; object-fit: cover; border-radius: 8px;">
+        <div style="flex: 1;">
+          <h2 style="margin: 0 0 10px 0; font-size: 1.8rem;">{{ selectedGame.title }}</h2>
+          <p style="color: #ff2a2a; font-weight: bold; margin: 0 0 5px 0;">Desarrollador: {{ selectedGame.developer?.name }}</p>
+          <p style="color: #aaa; font-size: 0.9rem; margin: 0;">Lanzamiento: {{ selectedGame.release_date }}</p>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 25px;">
+        <h3 style="border-bottom: 1px solid #333; padding-bottom: 8px; color: #ddd;">Sinopsis</h3>
+        <p style="color: #ccc; line-height: 1.6;">{{ selectedGame.synopsis }}</p>
+      </div>
+
+      <!-- Sección de Reseñas Comunitarias y Steam Scraping -->
+      <div>
+        <h3 style="border-bottom: 1px solid #333; padding-bottom: 8px; color: #ddd;">Reseñas de la Comunidad</h3>
+        
+        <!-- Formulario para publicar nueva reseña -->
+        <div style="margin: 15px 0; display: flex; flex-direction: column; gap: 10px;">
+          <textarea [(ngModel)]="newReviewComment" placeholder="Escribe tu opinión sobre este juego..." rows="3" style="background: #1e1e1e; border: 1px solid #444; color: white; padding: 10px; border-radius: 6px; resize: none;"></textarea>
+          <!-- 👇 BOTÓN DE PUBLICAR RESEÑA -->
+          <button (click)="submitReview()" style="align-self: flex-end; background: #ff2a2a; color: white; border: none; padding: 8px 20px; border-radius: 5px; font-weight: bold; cursor: pointer;">Publicar Reseña</button>
+        </div>
+
+        <!-- Lista de reseñas (ya sean de la DB o extraídas de Steam en tiempo real) -->
+        <div style="display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto;">
+          @for (review of gameReviews; track $index) {
+            <div style="background: #1c1c1c; padding: 12px; border-radius: 6px; border-left: 4px solid #ff2a2a;">
+              <p style="margin: 0 0 5px 0; font-size: 0.9rem; color: #ddd;">{{ review.comment }}</p>
+              <span style="font-size: 0.75rem; color: #777;">Escrito por usuario verificado</span>
+            </div>
+          } @empty {
+            <p style="color: #777; font-style: italic;">Aún no hay reseñas para este juego. ¡Sé el primero en opinar!</p>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ============================================================
+     VENTANA MODAL: PASARELA DE PAGO NEQUI
+     ============================================================ -->
+<!-- 👇 PASARELA DE PAGO NEQUI -->
+@if (showNequiModal && selectedGameForPurchase) {
+  <div class="nequi-modal-overlay">
+    <div class="nequi-modal-content">
+      <!-- Cierra el modal de Nequi -->
+      <button class="nequi-close" (click)="showNequiModal = false">×</button>
+      
+      <div class="nequi-header">
+        <h2 style="color: #fff; margin: 0; font-family: Arial, sans-serif; letter-spacing: 2px;">NEQUI</h2>
+      </div>
+
+      <div class="nequi-body">
+        <p class="nequi-amount">{{ selectedGameForPurchase.base_price > 0 ? (selectedGameForPurchase.base_price | currency:'COP':'symbol-narrow':'1.0-0') : 'Gratis' }}</p>
+        <p class="nequi-merchant">Pago a NEXUS por {{ selectedGameForPurchase.title }}</p>
+
+        <!-- FASE 1: Formulario de ingreso de número celular -->
+        @if (paymentStatus === 'waiting') {
+          <div class="nequi-form">
+            <label>Número de celular Nequi</label>
+            <input type="tel" [(ngModel)]="phoneNumber" placeholder="300 000 0000" class="nequi-input">
+            <button class="nequi-btn-pay" [disabled]="!phoneNumber" (click)="processPayment()">Pagar</button>
+          </div>
+        }
+
+        <!-- FASE 2: Animación simulando verificación del pago con el banco -->
+        @if (paymentStatus === 'processing') {
+          <div class="nequi-processing">
+            <div class="spinner"></div>
+            <p>Procesando tu pago...</p>
+            <p style="font-size: 12px; color: #888;">Por favor confirma en tu app Nequi.</p>
+          </div>
+        }
+
+        <!-- FASE 3: Confirmación de éxito y redirección a la biblioteca -->
+        @if (paymentStatus === 'success') {
+          <div class="nequi-success">
+            <div class="success-icon">✓</div>
+            <h3>¡Pago exitoso!</h3>
+            <p>{{ selectedGameForPurchase.title }} se ha añadido a tu Biblioteca personal.</p>
+            <!-- router.navigate redirige automáticamente sin recargar -->
+            <button class="nequi-btn-pay" (click)="showNequiModal = false; router.navigate(['/biblioteca'])">Ir a mi Biblioteca</button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

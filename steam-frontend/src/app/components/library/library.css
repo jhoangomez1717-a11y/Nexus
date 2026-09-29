@@ -1,0 +1,286 @@
+/*
+  ARCHIVO: library.css
+  PROPÓSITO: Hoja de estilos del componente Biblioteca (LibraryComponent).
+  Define la interfaz de la colección personal del usuario, inspirada en clientes 
+  de escritorio (como Steam o Epic Games), con una barra lateral izquierda para 
+  la lista de juegos y un panel principal expansivo a la derecha para los detalles.
+*/
+
+/* ============================================================
+   CONTENEDOR PRINCIPAL
+   ============================================================ */
+.library-container {
+  display: flex;
+  height: calc(100vh - 60px); /* Ocupa toda la pantalla descontando el Navbar superior */
+  background-color: #0a0a0a; /* Fondo ultra oscuro corporativo de NEXUS */
+  color: #cccccc;
+}
+
+/* ============================================================
+   BARRA LATERAL IZQUIERDA (LISTA DE JUEGOS)
+   ============================================================ */
+.sidebar {
+  width: 280px;
+  background-color: #111111; /* Gris oscuro para contrastar con el fondo principal */
+  border-right: 1px solid #222222;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 10px;
+  background-color: #111111;
+}
+
+/* BUSCADOR DE LA BIBLIOTECA */
+.sidebar-search {
+  width: 100%;
+  padding: 5px 10px;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 3px;
+  color: white;
+  font-size: 13px;
+  transition: border-color 0.3s;
+}
+
+.sidebar-search:focus {
+  outline: none;
+  border-color: #ff2a2a; /* Acento rojo corporativo al hacer clic */
+}
+
+/* LISTA DESLIZABLE (SCROLL) DE JUEGOS */
+.game-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto; /* Permite hacer scroll vertical si hay muchos juegos */
+  flex-grow: 1;
+}
+
+/* ÍTEM INDIVIDUAL DE LA LISTA */
+.game-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  cursor: pointer;
+  gap: 10px;
+  border-left: 4px solid transparent; /* Espacio reservado para evitar saltos visuales al seleccionarlo */
+  transition: all 0.2s;
+}
+
+.game-item:hover {
+  background-color: #1a1a1a; /* Resalta el ítem al pasar el mouse */
+}
+
+/* Estado Activo: Cuando el usuario hace clic en el juego para ver sus detalles */
+.game-item.active {
+  background-color: #1a1a1a;
+  border-left: 4px solid #ff2a2a; /* Indicador lateral rojo estilo NEXUS */
+  color: #fff;
+}
+
+.game-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: cover; /* Asegura que la carátula no se deforme al reducirse a icono */
+  border-radius: 2px;
+}
+
+.game-name {
+  font-size: 14px;
+  white-space: nowrap; /* Evita que el nombre baje a la segunda línea */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Añade "..." si el nombre es muy largo */
+}
+
+/* ============================================================
+   PANEL PRINCIPAL DERECHO (DETALLES DEL JUEGO SELECCIONADO)
+   ============================================================ */
+.main-content {
+  flex-grow: 1; /* Ocupa todo el espacio restante de la pantalla */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: linear-gradient(to bottom, #111111 0%, #050505 100%);
+}
+
+/* PORTADA SUPERIOR (HERO) DEL JUEGO */
+.hero-banner {
+  height: 350px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: flex-end; /* Alinea el título en la parte inferior de la imagen */
+}
+
+/* Sombra inferior (Vignette) para garantizar que el texto siempre sea legible */
+.hero-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  /* Degradado oscuro que sube desde abajo y se desvanece */
+  background: linear-gradient(to top, rgba(17,17,17,1) 0%, rgba(17,17,17,0) 60%);
+}
+
+.hero-title {
+  position: relative;
+  z-index: 1; /* Mantiene el texto por encima del degradado negro */
+  font-size: 48px;
+  color: #fff;
+  margin: 0 0 20px 40px;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+}
+
+/* ============================================================
+   BARRA DE ESTADO Y ACCIÓN (BOTÓN JUGAR Y ESTADÍSTICAS)
+   ============================================================ */
+.action-bar {
+  display: flex;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px); /* Efecto cristal esmerilado detrás de la barra */
+  border-bottom: 1px solid #222;
+}
+
+.play-section {
+  width: 250px;
+}
+
+/* BOTÓN JUGAR (Mantiene el estándar verde universal de la industria) */
+.btn-play {
+  background: linear-gradient(to bottom, #799905 0%, #536904 100%);
+  color: #d2efa9;
+  border: none;
+  border-radius: 4px;
+  padding: 15px 40px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  transition: filter 0.2s;
+}
+
+.btn-play:hover {
+  filter: brightness(1.2); /* Aumenta el brillo sin necesidad de cambiar los colores hexadecimales */
+  color: #fff;
+}
+
+.play-icon { font-size: 18px; }
+
+/* ESTADOS DE EJECUCIÓN DEL JUEGO */
+.btn-playing {
+  background: #111;
+  color: #ff2a2a;
+  border: 1px solid #ff2a2a;
+  border-radius: 4px;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.btn-stop {
+  background: linear-gradient(to bottom, #cc3333 0%, #990000 100%);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-stop:hover { filter: brightness(1.2); }
+
+/* SECCIÓN DE ESTADÍSTICAS (TIEMPO JUGADO, LOGROS) */
+.stats-section {
+  display: flex;
+  gap: 40px;
+  margin-left: 40px;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #888;
+  letter-spacing: 1px; /* Espaciado entre letras para mejor lectura de textos pequeños */
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #fff;
+}
+
+.achievements-stat {
+  width: 200px;
+}
+
+.achievement-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* BARRA DE PROGRESO DE LOGROS */
+.progress-bar-bg {
+  flex-grow: 1;
+  height: 6px;
+  background-color: #222;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #ff2a2a; /* Relleno con el color corporativo */
+  transition: width 0.3s ease; /* Anima el crecimiento de la barra */
+}
+
+/* ============================================================
+   CUERPO PRINCIPAL (ACTIVIDAD)
+   ============================================================ */
+.game-body {
+  padding: 40px;
+}
+
+.activity-feed h2 {
+  font-size: 14px;
+  color: #fff;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
+}
+
+.activity-card {
+  background-color: rgba(17, 17, 17, 0.8);
+  border: 1px solid #222;
+  padding: 20px;
+  border-radius: 4px;
+}
+
+/* Botón secundario para escribir reseñas desde la biblioteca */
+.btn-recommend {
+  background-color: #222;
+  color: #ccc;
+  border: 1px solid #444;
+  padding: 5px 15px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-recommend:hover { 
+  background-color: #ff2a2a; 
+  color: #fff; 
+  border-color: #ff2a2a;
+}

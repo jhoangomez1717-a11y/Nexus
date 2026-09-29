@@ -1,0 +1,127 @@
+/*
+  ARCHIVO: profile.css
+  PROPÓSITO: Hoja de estilos para el componente del Perfil de Usuario (ProfileComponent).
+  Estructura la vista emulando el diseño clásico de un perfil de jugador (tipo Steam),
+  dividido en una cabecera superior con la información del usuario y un cuerpo con 
+  dos columnas: la actividad reciente (izquierda) y un panel de estadísticas (derecha).
+*/
+
+/* ============================================================
+   CONTENEDOR PRINCIPAL
+   ============================================================ */
+.profile-container {
+  max-width: 960px; /* Ancho fijo para mantener la estructura compacta y centrada */
+  margin: 0 auto;
+  padding: 40px 20px;
+  color: #cccccc;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ============================================================
+   CABECERA DEL PERFIL (HEADER)
+   ============================================================ */
+.profile-header {
+  display: flex;
+  gap: 30px;
+  background: linear-gradient(to right, #1a1a1a 0%, #111111 100%);
+  padding: 20px;
+  border-radius: 4px;
+  margin-bottom: 30px;
+  border: 1px solid #222;
+}
+
+/* Avatar de tamaño extra grande para el perfil */
+.avatar-large {
+  width: 160px;
+  height: 160px;
+  background-color: #0a0a0a;
+  border: 2px solid #ff2a2a; /* Borde con el rojo corporativo de NEXUS */
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-large svg { fill: #555; width: 100px; }
+
+.profile-info {
+  flex-grow: 1; display: flex; flex-direction: column; align-items: flex-start;
+}
+
+.username {
+  font-size: 24px; color: #fff; margin: 0 0 10px 0;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.dropdown-arrow { font-size: 12px; color: #ff2a2a; cursor: pointer; }
+
+/* Insignia de Nivel del Usuario */
+.level-badge { font-size: 16px; margin-bottom: auto; }
+.level-badge span {
+  display: inline-block; border: 1px solid #ff2a2a; border-radius: 50%;
+  width: 24px; height: 24px; line-height: 24px; text-align: center;
+  color: #fff; margin-left: 5px;
+}
+
+/* Botón de edición de perfil */
+.btn-edit {
+  background-color: #222; color: #ccc; border: 1px solid #444;
+  padding: 5px 15px; border-radius: 2px; cursor: pointer;
+  align-self: flex-end; transition: all 0.2s;
+}
+.btn-edit:hover { background-color: #ff2a2a; color: #fff; border-color: #ff2a2a; }
+
+/* ============================================================
+   CUERPO DEL PERFIL Y ACTIVIDAD RECIENTE
+   ============================================================ */
+.profile-body { display: flex; gap: 20px; }
+.recent-activity { flex-grow: 1; }
+
+.section-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 15px;
+}
+.section-header h2 { font-size: 18px; color: #fff; font-weight: normal; margin: 0; }
+
+/* ============================================================
+   TARJETAS DE JUEGO (VERSIÓN COMPACTA PARA PERFIL)
+   ============================================================ */
+.game-card {
+  display: flex; background-color: #111; border: 1px solid #222;
+  padding: 10px; margin-bottom: 10px; border-radius: 3px; gap: 15px;
+}
+/* Imagen en formato horizontal (Landscape) */
+.game-image { width: 184px; height: 69px; object-fit: cover; }
+.game-details { flex-grow: 1; display: flex; flex-direction: column; }
+.game-title { font-size: 15px; color: #fff; margin: 0 0 5px 0; font-weight: bold; }
+.game-stats {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: #888; margin-bottom: 15px;
+}
+
+/* ============================================================
+   BARRAS DE LOGROS (MINIATURAS)
+   ============================================================ */
+.achievements-text {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: #888; margin-bottom: 5px;
+}
+.progress-bar-bg { background-color: #222; height: 8px; border-radius: 4px; overflow: hidden; }
+.progress-bar-fill { background-color: #ff2a2a; height: 100%; transition: width 0.3s ease; }
+
+/* ============================================================
+   BARRA LATERAL DERECHA (ESTADÍSTICAS GLOBALES Y ENLACES)
+   ============================================================ */
+.sidebar { width: 250px; display: flex; flex-direction: column; gap: 15px; }
+.status { color: #ff2a2a; font-size: 20px; margin-bottom: 10px; font-weight: bold; }
+
+.sidebar-item {
+  display: flex; justify-content: space-between; font-size: 14px;
+  border-bottom: 1px solid #333; padding-bottom: 5px;
+}
+.item-count { color: #fff; }
+
+/* Lista de enlaces rápidos (Juegos, Inventario, Capturas, etc.) */
+.sidebar-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.sidebar-links li { font-size: 14px; color: #aaa; cursor: pointer; transition: color 0.2s; }
+.sidebar-links li:hover { color: #ff2a2a; }

@@ -1,0 +1,14 @@
+/*
+  ARCHIVO: styles.css
+  PROPÓSITO: Hoja de estilos global de la aplicación.
+  A diferencia de app.css (que solo afecta al componente raíz), 
+  los estilos definidos aquí aplican a toda la página a nivel de navegador.
+*/
+
+/* You can add global styles to this file, and also import other style files */
+
+/* 
+  Resetea los márgenes por defecto del navegador para evitar bordes blancos indeseados
+  y establece el color de fondo base de toda la página web en negro puro (#000).
+*/
+body { margin: 0; background: #000; }

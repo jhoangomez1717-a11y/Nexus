@@ -1,0 +1,142 @@
+/*
+  ARCHIVO: auth.css
+  PROPÓSITO: Hoja de estilos encapsulada para el componente de Autenticación (AuthComponent).
+  Define el diseño de la pantalla de Login y Registro, centrándose en una interfaz
+  limpia, oscura (Dark Mode) y centrada en la pantalla, utilizando Flexbox para la alineación.
+*/
+
+/* ============================================================
+   CONTENEDOR PRINCIPAL
+   ============================================================ */
+.auth-container {
+  /* Flexbox para centrar la tarjeta de login tanto vertical como horizontalmente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh; /* Ocupa al menos el 80% del alto de la ventana visible */
+  background-color: #0d0d0d;
+}
+
+/* ============================================================
+   TARJETA DE FORMULARIO (CARD)
+   ============================================================ */
+.auth-box {
+  background: #141414;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px; /* Evita que el formulario se estire demasiado en pantallas grandes */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Sombra de profundidad */
+  text-align: center;
+}
+
+/* ============================================================
+   TIPOGRAFÍA Y LOGO
+   ============================================================ */
+.auth-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  color: white;
+  font-size: 3rem;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+/* Destaca la letra 'X' del logo con el color corporativo */
+.auth-logo__x {
+  color: #ff2a2a;
+}
+
+.auth-subtitle {
+  color: #888;
+  margin-bottom: 30px;
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   FORMULARIO Y CAMPOS DE TEXTO (INPUTS)
+   ============================================================ */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Separación uniforme entre cada campo del formulario */
+  text-align: left;
+}
+
+.form-group label {
+  color: #ccc;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  color: white;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+/* Pseudo-clase :focus - Cambia el borde a rojo cuando el usuario hace clic para escribir */
+.form-group input:focus {
+  outline: none;
+  border-color: #ff2a2a;
+}
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.btn-submit {
+  background: #ff2a2a;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s; /* Suaviza el cambio de color al hacer hover */
+  margin-top: 10px;
+}
+
+.btn-submit:hover {
+  background: #cc2222; /* Oscurece el botón al pasar el mouse */
+}
+
+/* ============================================================
+   MENSAJES DE ALERTA
+   ============================================================ */
+.error-message {
+  color: #ff2a2a;
+  background: rgba(255, 42, 42, 0.1); /* Fondo translúcido rojo */
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ============================================================
+   ALTERNADOR LOGIN / REGISTRO
+   ============================================================ */
+.auth-switch {
+  margin-top: 25px;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* Botón invisible (sin fondo ni bordes) que actúa como enlace de texto */
+.btn-switch {
+  background: none;
+  border: none;
+  color: #ff2a2a;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.btn-switch:hover {
+  text-decoration: underline;
+}

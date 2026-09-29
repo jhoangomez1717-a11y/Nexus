@@ -1,0 +1,21 @@
+<!--
+  ARCHIVO: index.html
+  PROPÓSITO: Es la única página HTML física que el servidor envía al navegador.
+  Como NEXUS es una SPA (Single Page Application), el navegador nunca cambia de 
+  archivo HTML. Angular toma control de esta página e inyecta dinámicamente 
+  toda la interfaz dentro de la etiqueta <app-root>.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SteamFrontend</title>
+  <base href="/"> <!-- Indica la ruta base para el sistema de navegación (Router) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <!-- Aquí es donde Angular monta el AppComponent (app.ts y app.html) -->
+  <app-root></app-root>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!--
+  ARCHIVO: library.html
+  PROPÓSITO: Plantilla visual de la Biblioteca personal del usuario.
+  Muestra los juegos adquiridos en una lista lateral y permite seleccionar 
+  uno para ver sus detalles interactivos (horas jugadas, logros) en el panel principal,
+  simulando la experiencia de un "Launcher" de videojuegos (como Steam).
+-->
+
+<div class="library-container">
+  
+  <!-- ============================================================
+       BARRA LATERAL (LISTA DE JUEGOS COMPRADOS)
+       ============================================================ -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <!-- Buscador local (sin funcionalidad en este fragmento) -->
+      <input type="text" placeholder="Buscar juego..." class="sidebar-search">
+    </div>
+    
+    <ul class="game-list">
+      <!-- 
+        Itera sobre el arreglo myGames cargado desde el LocalStorage.
+        track game.id mejora el rendimiento de renderizado en Angular.
+      -->
+      @for (game of myGames; track game.id) {
+        <!-- 
+          [class.active]: Aplica la clase CSS 'active' dinámicamente solo si 
+          el ID del juego coincide con el ID del juego actualmente seleccionado.
+          (click): Al hacer clic, ejecuta la función selectGame() en library.ts.
+        -->
+        <li class="game-item" 
+            [class.active]="selectedGame?.id === game.id"
+            (click)="selectGame(game)">
+          <!-- Ícono dinámico del juego -->
+          <img [src]="game.cover" alt="" class="game-icon">
+          <span class="game-name">{{ game.title }}</span>
+        </li>
+      } @empty {
+        <!-- Mensaje de estado vacío si no se han comprado juegos -->
+        <p style="padding: 15px; color: #888; font-size: 14px;">No tienes juegos en tu cuenta. ¡Ve a la tienda a comprar algunos!</p>
+      }
+    </ul>
+  </aside>
+
+  <!-- ============================================================
+       PANEL PRINCIPAL (DETALLES E INTERACCIÓN DEL JUEGO)
+       ============================================================ -->
+  <main class="main-content">
+    <!-- Solo se muestra contenido si hay un juego seleccionado de la lista lateral -->
+    @if (selectedGame) {
+      
+      <!-- 
+        PORTADA GRANDE (HERO BANNER) 
+        Usa Style Binding [style.backgroundImage] para cargar la carátula dinámicamente como fondo.
+      -->
+      <div class="hero-banner" [style.backgroundImage]="'url(' + selectedGame.cover + ')'">
+        <div class="hero-overlay"></div>
+        <h1 class="hero-title">{{ selectedGame.title }}</h1>
+      </div>
+
+      <!-- BARRA DE ACCIÓN (Contiene el botón Jugar y las estadísticas) -->
+      <div class="action-bar">
+        
+        <!-- ============================================================
+             BOTONES DINÁMICOS DE SESIÓN DE JUEGO
+             ============================================================ -->
+        <div class="play-section">
+          <!-- Si no se está jugando actualmente, muestra el botón JUGAR -->
+          @if (!isPlaying) {
+            <button class="btn-play" (click)="playGame()">
+              <span class="play-icon">▶</span> JUGAR
+            </button>
+          } @else {
+            <!-- 
+              MODO JUGANDO (Simulador Activo) 
+              Muestra un contador en tiempo real y el botón para detener la sesión.
+            -->
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-playing">
+                JUGANDO ({{ secondsPlaying }}s)
+              </button>
+              <button class="btn-stop" (click)="stopPlaying()">
+                DETENER
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- ============================================================
+             ESTADÍSTICAS EN VIVO Y PROGRESO
+             ============================================================ -->
+        <div class="stats-section">
+          <!-- Fecha de la última sesión -->
+          <div class="stat-box">
+            <span class="stat-label">ÚLTIMA SESIÓN</span>
+            <!-- Si lastPlayed es null, muestra 'Nunca' -->
+            <span class="stat-value">{{ selectedGame.lastPlayed || 'Nunca' }}</span>
+          </div>
+          
+          <!-- Horas totales acumuladas -->
+          <div class="stat-box">
+            <span class="stat-label">TIEMPO DE JUEGO</span>
+            <!-- toFixed(1) para mostrar solo un decimal (ej. 2.5 horas) en lugar de números muy largos -->
+            <span class="stat-value">{{ selectedGame.hoursPlayed.toFixed(1) }} horas</span>
+          </div>
+          
+          <!-- Progreso de Logros Simulados -->
+          <div class="stat-box achievements-stat">
+            <span class="stat-label">LOGROS</span>
+            <div class="achievement-progress">
+              <div class="progress-bar-bg">
+                <!-- 
+                  La longitud de la barra roja cambia dinámicamente llamando a la función 
+                  getAchievementPercentage() que calcula (desbloqueados / totales) * 100 
+                -->
+                <div class="progress-bar-fill" [style.width]="getAchievementPercentage(selectedGame) + '%'"></div>
+              </div>
+              <span class="stat-value">{{ selectedGame.achievementsUnlocked }}/{{ selectedGame.totalAchievements }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============================================================
+           SECCIÓN DE ACTIVIDAD Y FEEDBACK
+           ============================================================ -->
+      <div class="game-body">
+        <div class="activity-feed">
+          <h2>ACTIVIDAD RECIENTE</h2>
+          <div class="activity-card">
+            <!-- 
+              Lógica condicional: El feedback de recomendación solo se muestra 
+              si el usuario ya ha jugado al menos una vez (hoursPlayed > 0).
+            -->
+            @if (selectedGame.hoursPlayed > 0) {
+              <p>Has jugado durante {{ selectedGame.hoursPlayed.toFixed(1) }} horas en total.</p>
+              <p style="color: #8f98a0; font-size: 13px; margin-top: 10px;">¿Recomendarías este juego a otros jugadores?</p>
+              <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn-recommend">👍 Sí</button>
+                <button class="btn-recommend">👎 No</button>
+              </div>
+            } @else {
+              <!-- Mensaje alternativo si el juego es nuevo y no se ha tocado -->
+              <p>Aún no has probado este título. ¡Dale al botón Jugar para empezar tu aventura!</p>
+            }
+          </div>
+        </div>
+      </div>
+      
+    }
+  </main>
+</div>

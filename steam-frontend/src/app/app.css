@@ -1,0 +1,305 @@
+/* ============================================================
+   ARCHIVO: app.css (Estilos del Componente Principal)
+   PROPÓSITO: Define la apariencia visual de la barra de navegación (Navbar) 
+   y el diseño base de NEXUS. Utiliza un enfoque moderno con CSS Variables, 
+   CSS Grid para el esqueleto de la página, y Flexbox para alinear elementos.
+   ============================================================ */
+
+/* Importamos fuentes modernas y agresivas desde Google Fonts para el estilo Gamer */
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Barlow:wght@400;500;600;700&display=swap');
+
+/* ============================================================
+   VARIABLES GLOBALES (:host)
+   ============================================================ */
+/* :host apunta al contenedor raíz de este componente. 
+   Aquí definimos la "Paleta de Colores" y tipografías como variables (--nombre) 
+   para poder reutilizarlas y mantener consistencia en todo el diseño. */
+:host {
+  --black: #000000;
+  --surface: #0d0d0d;
+  --line: #262626;
+  --text: #f4f4f4;
+  --muted: #b5b5b5;
+
+  --red: #ff1f2e;
+  --red-bright: #ff4452;
+  --red-glow: rgba(255, 31, 46, 0.55); /* Usado para efectos de luz/sombra */
+  --red-border: rgba(255, 31, 46, 0.25);
+
+  --font-display: 'Big Shoulders Display', 'Impact', 'Arial Narrow', sans-serif;
+  --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+
+  display: block;
+  min-height: 100vh; /* Asegura que la app ocupe al menos toda la pantalla */
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+/* ============================================================
+   NAVBAR (Barra de Navegación Superior)
+   ============================================================ */
+.navbar {
+  position: sticky; /* Hace que la barra baje contigo cuando haces scroll */
+  top: 0;
+  z-index: 1000; /* Se asegura de que la barra esté siempre por encima del resto del contenido */
+  background: rgba(0, 0, 0, 0.92); /* Fondo negro casi transparente */
+  
+  /* Efecto moderno de "cristal esmerilado" o desenfoque del fondo (Efecto Glassmorphism) */
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--red-border);
+}
+
+/* Contenedor interno del Navbar usando CSS GRID */
+.navbar__inner {
+  display: grid;
+  /* Divide el espacio en 3 columnas: 1 fracción (logo), tamaño automático (nav), 1 fracción (usuario) */
+  grid-template-columns: 1fr auto 1fr;
+  
+  /* Asigna "Nombres" a las áreas para organizar fácilmente los elementos hijos */
+  grid-template-areas: 'logo nav user';
+  grid-template-rows: 68px; /* Altura fija de la barra */
+  align-items: stretch;
+  max-width: 1280px; /* Ancho máximo para pantallas muy grandes */
+  margin: 0 auto; /* Centra el contenido horizontalmente */
+  padding: 0 24px;
+}
+
+/* ============================================================
+   LOGO DE NEXUS
+   ============================================================ */
+.logo {
+  grid-area: logo; /* Se posiciona en el área 'logo' definida en la grilla superior */
+  justify-self: start;
+  align-self: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2.1rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Estilo para la letra 'X' del logo con efecto de luz LED (text-shadow) */
+.logo__x {
+  color: var(--red);
+  text-shadow: 0 0 16px var(--red-glow);
+  transition: text-shadow 0.3s ease; /* Animación suave al pasar el mouse */
+}
+
+.logo:hover .logo__x {
+  text-shadow: 0 0 10px var(--red), 0 0 26px var(--red-glow); /* Intensifica la luz al hacer hover */
+}
+
+/* ============================================================
+   NAVEGACIÓN CENTRAL (Tienda, Biblioteca, etc.)
+   ============================================================ */
+.nav {
+  grid-area: nav;
+  display: flex; /* Usamos Flexbox para poner los enlaces uno al lado del otro */
+  align-items: stretch;
+  gap: 8px; /* Espacio entre los botones */
+}
+
+.nav__link {
+  position: relative; /* Clave para poder posicionar la línea roja debajo (::after) */
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+/* PSEUDO-ELEMENTO: Crea la línea roja inferior que aparece al pasar el mouse */
+.nav__link::after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: -1px;
+  height: 3px;
+  background: var(--red);
+  box-shadow: 0 0 14px var(--red-glow);
+  
+  /* Inicialmente tiene tamaño 0 (invisible) */
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease; /* Anima el crecimiento de la línea */
+}
+
+.nav__link:hover {
+  color: var(--red-bright);
+}
+
+/* Al hacer hover o si es la ruta activa, la línea crece al 100% de su tamaño */
+.nav__link:hover::after,
+.nav__link--active::after {
+  transform: scaleX(1);
+}
+
+.nav__link--active,
+.nav__link--active:hover {
+  color: #fff;
+}
+
+/* Accesibilidad: Resalta el elemento si se navega con el teclado (Tab) */
+.nav__link:focus-visible,
+.logo:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
+/* ============================================================
+   SECCIÓN DE USUARIO (Saldo + Avatar)
+   ============================================================ */
+.user {
+  grid-area: user; /* Se va al lado derecho de la grilla */
+  justify-self: end;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.wallet {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 14px;
+  background: var(--surface);
+  border: 1px solid var(--red-border);
+  border-radius: 6px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.wallet:hover {
+  border-color: var(--red);
+  box-shadow: 0 0 18px -4px var(--red-glow);
+}
+
+.wallet__icon {
+  width: 8px;
+  height: 8px;
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red-glow);
+}
+
+.wallet__amount {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: #fff;
+}
+
+.avatar {
+  display: grid;
+  place-items: center; /* Centra el icono del avatar perfecta y fácilmente */
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1d1d1d, #080808);
+  border: 2px solid var(--red);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.avatar:hover {
+  box-shadow: 0 0 16px var(--red-glow);
+  transform: scale(1.05); /* Efecto de ligero zoom al pasar el mouse */
+}
+
+.avatar svg {
+  width: 24px;
+  height: 24px;
+  fill: #8a8a8a;
+}
+
+/* ============================================================
+   CONTENIDO PRINCIPAL
+   ============================================================ */
+.main {
+  display: block;
+}
+
+/* ============================================================
+   DISEÑO RESPONSIVO (MEDIA QUERIES)
+   ============================================================ */
+/* Cuando la pantalla sea menor a 768px (Tablets y Celulares) */
+@media (max-width: 768px) {
+  .navbar__inner {
+    /* Reorganizamos la grilla. Ahora son 2 columnas y 2 filas */
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'logo user'
+      'nav  nav'; /* El nav ocupa toda la segunda fila */
+    grid-template-rows: 60px 48px;
+    padding: 0 16px;
+  }
+
+  .logo {
+    font-size: 1.8rem;
+  }
+
+  /* Los enlaces pasan a una segunda fila, repartidos a todo el ancho (4 fracciones) */
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin: 0 -16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .nav__link {
+    justify-content: center;
+    padding: 0 4px;
+    font-size: 0.92rem;
+  }
+
+  /* Ajuste de la línea inferior roja para que no se salga del botón en móvil */
+  .nav__link::after {
+    left: 12%;
+    right: 12%;
+  }
+
+  .wallet {
+    padding: 6px 11px;
+  }
+
+  .wallet__amount {
+    font-size: 1.15rem;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Ajustes adicionales para pantallas ultra pequeñas (como iPhone SE) */
+@media (max-width: 380px) {
+  .nav__link {
+    font-size: 0.82rem;
+  }
+
+  .user {
+    gap: 10px;
+  }
+}
+
+/* ACCESIBILIDAD: Respeta la preferencia de menos movimiento del usuario. 
+   Si el usuario tiene configurado su sistema operativo para evitar animaciones (por mareos, epilepsia, etc), 
+   esto desactiva todos los "transitions" mágicamente. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
